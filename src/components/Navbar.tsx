@@ -11,6 +11,23 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // 👇 handle nav click (Flights & Hotels)
+  const handleNavClick = (item: string) => {
+    if (item === "Flights" || item === "Hotels") {
+      // 👉 Tell SearchSection to update tab
+      window.dispatchEvent(
+        new CustomEvent("setSearchTab", {
+          detail: item.toLowerCase() === "flights" ? "flight" : "hotel",
+        })
+      );
+
+      // 👉 Smooth scroll to search section
+      document.getElementById("search-section")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <header className="relative">
       <nav
@@ -33,24 +50,25 @@ export default function Navbar() {
           </Link>
 
           {/* Middle: Menu */}
-<div className="hidden md:flex space-x-8">
-  {["Flights", "Hotels", "Packages", "Deals", "Support"].map((item) => (
-    <Link
-      key={item}
-      href={`/${item.toLowerCase()}`}
-      className={`relative font-medium transition-all duration-300 group ${
-        scrolled ? "text-white" : "text-white"
-      }`}
-      style={{
-        textShadow: "0 0 8px rgba(3, 23, 245, 0.7)", // glow effect
-      }}
-    >
-      {item}
-      <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
-    </Link>
-  ))}
-</div>
-
+          <div className="hidden md:flex space-x-8">
+            {["Flights", "Hotels", "Packages", "Deals", "Support"].map(
+              (item) => (
+                <button
+                  key={item}
+                  onClick={() => handleNavClick(item)}
+                  className={`relative font-medium transition-all duration-300 group ${
+                    scrolled ? "text-white" : "text-white"
+                  }`}
+                  style={{
+                    textShadow: "0 0 8px rgba(3, 23, 245, 0.7)", // glow effect
+                  }}
+                >
+                  {item}
+                  <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
+                </button>
+              )
+            )}
+          </div>
 
           {/* Buttons */}
           <div className="flex items-center space-x-4">

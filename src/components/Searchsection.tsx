@@ -1,10 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
-export default function SearchBox() {
+export default function Searchsection() {
   const [activeTab, setActiveTab] = useState<"flight" | "hotel" | "both">("flight");
   const [tripType, setTripType] = useState<"roundtrip" | "oneway">("roundtrip");
   const [loading, setLoading] = useState(false);
+
+  // form state
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [guests, setGuests] = useState("1");
 
   // Default dates
   const today = new Date();
@@ -20,32 +26,62 @@ export default function SearchBox() {
 
   const performSearch = () => {
     setLoading(true);
+
+    // send event so results section can catch it
+    window.dispatchEvent(
+      new CustomEvent("showFlightResults", {
+        detail: {
+          type: activeTab,
+          from,
+          to,
+          departureDate,
+          returnDate,
+          tripType,
+          guests,
+        },
+      })
+    );
+
     setTimeout(() => {
-      alert(`✓ Great! We found amazing ${activeTab} deals for you!`);
       setLoading(false);
-    }, 2000);
+    }, 1000);
   };
 
   return (
-    <div className="gradient-bg min-h-screen py-100 ">
+    <div id="search-section" className="gradient-bg min-h-screen py-25">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            Find Your Perfect Trip
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Search flights and hotels at the best prices
-          </p>
+          <motion.h1
+            initial={{ opacity: 0, y: -50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: false, amount: 0.6 }}
+            className="text-4xl font-bold text-glass mb-5"
+          >
+            <h1>Find Your Perfect Trip</h1>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0., duration: 0.8 }}
+            viewport={{ once: false, amount: 0.6 }}
+          >
+            <p className="mt-4 text-2xl md:text-3xl font-semibold 
+               bg-gradient-to-r from-blue-300 via-white to-blue-500 
+               bg-clip-text text-transparent drop-shadow-lg text-center">
+              Search flights and hotels at the best prices !
+            </p>
+          </motion.p>
         </div>
 
         {/* Main Search Container */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-5xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-2xl p-15 max-w-5xl mx-auto">
           {/* Tabs */}
-          <div className="flex mb-8 bg-gray-100 rounded-xl p-1">
+          <div className="flex mb-8 bg-gray-100 rounded-xl p-4">
             <button
               onClick={() => setActiveTab("flight")}
-              className={`flex-1 py-7 px-6 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+              className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
                 activeTab === "flight"
                   ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
                   : "text-gray-600 hover:text-gray-800"
@@ -80,7 +116,7 @@ export default function SearchBox() {
             <div>
               {/* Trip type */}
               <div className="flex gap-4 mb-6">
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex items-center gap-2 cursor-pointer text-gray-800">
                   <input
                     type="radio"
                     name="tripType"
@@ -90,7 +126,7 @@ export default function SearchBox() {
                   />
                   <span className="font-medium">Round Trip</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex items-center gap-2 cursor-pointer text-gray-800">
                   <input
                     type="radio"
                     name="tripType"
@@ -107,25 +143,29 @@ export default function SearchBox() {
                 <input
                   type="text"
                   placeholder="From"
-                  className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
+                  value={from}
+                  onChange={(e) => setFrom(e.target.value)}
+                  className="p-5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none text-gray-900 placeholder-gray-500"
                 />
                 <input
                   type="text"
                   placeholder="To"
-                  className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
+                  value={to}
+                  onChange={(e) => setTo(e.target.value)}
+                  className="p-5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none text-gray-900 placeholder-gray-500"
                 />
                 <input
                   type="date"
                   value={departureDate}
                   onChange={(e) => setDepartureDate(e.target.value)}
-                  className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
+                  className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none text-gray-900 placeholder-gray-500"
                 />
                 <input
                   type="date"
                   value={returnDate}
                   disabled={tripType === "oneway"}
                   onChange={(e) => setReturnDate(e.target.value)}
-                  className={`p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none ${
+                  className={`p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none text-gray-900 placeholder-gray-500 ${
                     tripType === "oneway" ? "opacity-50" : ""
                   }`}
                 />
@@ -139,52 +179,26 @@ export default function SearchBox() {
               <input
                 type="text"
                 placeholder="Destination"
-                className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
+                className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none text-gray-900 placeholder-gray-500"
               />
               <input
                 type="date"
-                className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
+                className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none text-gray-900 placeholder-gray-500"
               />
               <input
                 type="date"
-                className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
+                className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none text-gray-900 placeholder-gray-500"
               />
-              <select className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
+              <select
+                value={guests}
+                onChange={(e) => setGuests(e.target.value)}
+                className="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none text-gray-900"
+              >
                 <option>1 Guest</option>
                 <option>2 Guests</option>
                 <option>3 Guests</option>
                 <option>4+ Guests</option>
               </select>
-            </div>
-          )}
-
-          {/* Combined Form */}
-          {activeTab === "both" && (
-            <div className="space-y-6">
-              <div className="bg-blue-50 p-4 rounded-xl">
-                <h3 className="font-semibold text-blue-800 mb-2">Flight Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <input type="text" placeholder="From" className="p-3 border rounded-lg" />
-                  <input type="text" placeholder="To" className="p-3 border rounded-lg" />
-                  <input type="date" className="p-3 border rounded-lg" />
-                  <input type="date" className="p-3 border rounded-lg" />
-                </div>
-              </div>
-
-              <div className="bg-green-50 p-4 rounded-xl">
-                <h3 className="font-semibold text-green-800 mb-2">Hotel Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <input type="text" placeholder="Hotel destination" className="p-3 border rounded-lg" />
-                  <select className="p-3 border rounded-lg">
-                    <option>1 Guest</option>
-                    <option>2 Guests</option>
-                  </select>
-                  <select className="p-3 border rounded-lg">
-                    <option>1 Room</option>
-                    <option>2 Rooms</option>
-                  </select>
-                </div>
-              </div>
             </div>
           )}
 

@@ -20,7 +20,7 @@ export default function HomePage() {
         
 
         {/* Floating Search Box */}
-        <div className="relative z-10 w-full max-w-4xl px-4">
+        <div id="search-section" className="relative z-10 w-full max-w-4xl px-4">
           <SearchSection />
         </div>
       </section>
