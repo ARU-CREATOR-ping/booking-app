@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function Searchsection() {
   const [activeTab, setActiveTab] = useState<"flight" | "hotel" | "both">("flight");
@@ -9,6 +10,8 @@ export default function Searchsection() {
 
   // form state
   const [from, setFrom] = useState("");
+  const router = useRouter();
+
   const [to, setTo] = useState("");
   const [guests, setGuests] = useState("1");
 
@@ -25,7 +28,13 @@ export default function Searchsection() {
   const [returnDate, setReturnDate] = useState(formatDate(nextWeek));
 
   const performSearch = () => {
-    setLoading(true);
+  if (activeTab === "flight") {
+    router.push(`/flights?from=${from}&to=${to}`);
+  } else if (activeTab === "hotel") {
+    router.push(`/hotels?city=${to}`);
+  
+};
+
 
     // send event so results section can catch it
     window.dispatchEvent(
@@ -48,7 +57,7 @@ export default function Searchsection() {
   };
 
   return (
-    <div id="search-section" className="gradient-bg min-h-screen py-25">
+    <div id="search-section" className="gradient-bg min-h-screen py-">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
